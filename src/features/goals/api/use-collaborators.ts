@@ -7,7 +7,7 @@ export function useCollaborators(goalId: string) {
     queryKey: ['collaborators', goalId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('collaborators')
+        .from('goalst_collaborators')
         .select('*, user:user_id(id, email)')
         .eq('goal_id', goalId)
       if (error) throw error
@@ -31,7 +31,7 @@ export function useAddCollaborator() {
     }) => {
       // Look up user by email
       const { data: userData, error: userError } = await supabase
-        .from('users')
+        .from('goalst_user_emails')
         .select('id')
         .eq('email', email)
         .single()
@@ -39,7 +39,7 @@ export function useAddCollaborator() {
       if (userError) throw new Error('No user found with that email')
 
       const { data, error } = await supabase
-        .from('collaborators')
+        .from('goalst_collaborators')
         .insert({ goal_id: goalId, user_id: userData.id, role })
         .select()
         .single()
@@ -65,7 +65,7 @@ export function useUpdateCollaboratorRole() {
       role: CollaboratorRole
     }) => {
       const { error } = await supabase
-        .from('collaborators')
+        .from('goalst_collaborators')
         .update({ role })
         .eq('goal_id', goalId)
         .eq('user_id', userId)
@@ -82,7 +82,7 @@ export function useRemoveCollaborator() {
   return useMutation({
     mutationFn: async ({ goalId, userId }: { goalId: string; userId: string }) => {
       const { error } = await supabase
-        .from('collaborators')
+        .from('goalst_collaborators')
         .delete()
         .eq('goal_id', goalId)
         .eq('user_id', userId)

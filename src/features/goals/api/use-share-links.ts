@@ -7,7 +7,7 @@ export function useShareLinks(goalId: string) {
     queryKey: ['share-links', goalId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('share_links')
+        .from('goalst_share_links')
         .select('*')
         .eq('goal_id', goalId)
         .is('revoked_at', null)
@@ -30,7 +30,7 @@ export function useCreateShareLink() {
     }) => {
       const token = crypto.randomUUID().replace(/-/g, '')
       const { data, error } = await supabase
-        .from('share_links')
+        .from('goalst_share_links')
         .insert({ goal_id: goalId, token, permission })
         .select()
         .single()
@@ -48,7 +48,7 @@ export function useRevokeShareLink() {
   return useMutation({
     mutationFn: async ({ id, goalId }: { id: string; goalId: string }) => {
       const { error } = await supabase
-        .from('share_links')
+        .from('goalst_share_links')
         .update({ revoked_at: new Date().toISOString() })
         .eq('id', id)
       if (error) throw error
@@ -65,7 +65,7 @@ export function useGoalByToken(token: string) {
     queryKey: ['shared-goal', token],
     queryFn: async () => {
       const { data: link, error: linkError } = await supabase
-        .from('share_links')
+        .from('goalst_share_links')
         .select('*, goal:goal_id(*)')
         .eq('token', token)
         .is('revoked_at', null)

@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppLayout } from '@ui/layout'
 import { Button, EmptyState } from '@ui/index'
-import { Plus, Target } from '@ui/icons'
+import { RankBadge } from '@ui/rank-badge'
+import { Plus, Target, Search, SlidersHorizontal } from '@ui/icons'
 import { useGoals } from '@features/goals/api/use-goals'
 import { goalDetailPath } from '@shared/constants/routes'
 import { StatsStrip } from './parts/stats-strip'
@@ -12,6 +13,14 @@ import type { Goal } from '@shared/types'
 
 type SortKey = 'deadline' | 'created' | 'progress' | 'alpha'
 type FilterKey = 'all' | 'in_progress' | 'completed' | 'overdue' | 'not_started'
+
+const FILTER_LABELS: Record<FilterKey, string> = {
+  all: 'All',
+  in_progress: 'Active',
+  not_started: 'Not started',
+  completed: 'Done',
+  overdue: 'Overdue',
+}
 
 export function DashboardScreen() {
   const navigate = useNavigate()
@@ -57,86 +66,110 @@ export function DashboardScreen() {
 
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-brand-900">My Goals</h1>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus size={16} />
-          New goal
-        </Button>
-      </div>
-
-      {goals.length > 0 && <StatsStrip goals={goals} />}
-
-      {/* Controls */}
-      {goals.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 mb-5">
-          <input
-            type="text"
-            placeholder="Search goals..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border border-brand-200 rounded px-3 py-1.5 text-sm bg-white outline-none focus:border-brand-500 w-48"
-          />
-          <div className="flex items-center gap-1">
-            {(['all', 'in_progress', 'not_started', 'completed', 'overdue'] as FilterKey[]).map(
-              (f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors ${
-                    filter === f
-                      ? 'bg-brand-700 text-white'
-                      : 'bg-white border border-brand-200 text-brand-600 hover:bg-brand-50'
-                  }`}
-                >
-                  {f.replace(/_/g, ' ')}
-                </button>
-              ),
-            )}
+      <div className="lg:grid lg:grid-cols-[1fr_260px] lg:gap-8">
+        {/* Main column */}
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-brand-900 leading-tight">My Goals</h1>
+              {goals.length > 0 && (
+                <p className="text-sm text-brand-400 mt-0.5">{goals.length} goal{goals.length !== 1 ? 's' : ''} tracked</p>
+              )}
+            </div>
+            <Button onClick={() => setCreateOpen(true)} size="md">
+              <Plus size={15} />
+              New goal
+            </Button>
           </div>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="border border-brand-200 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-brand-500 ml-auto"
-          >
-            <option value="deadline">Sort: Deadline</option>
-            <option value="created">Sort: Newest</option>
-            <option value="alpha">Sort: A–Z</option>
-          </select>
-        </div>
-      )}
 
-      {/* Goal list */}
-      {isLoading ? (
-        <div className="flex justify-center py-16">
-          <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+          {goals.length > 0 && <StatsStrip goals={goals} />}
+
+          {/* Controls */}
+          {goals.length > 0 && (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+              {/* Search */}
+              <div className="relative flex-1 sm:max-w-[220px]">
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-300 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search goals..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full border-2 border-brand-100 rounded-xl pl-9 pr-3 py-2.5 text-sm bg-white outline-none focus:border-brand-400 transition-colors placeholder:text-brand-300"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 -mb-0.5 scrollbar-hide">
+                {(Object.entries(FILTER_LABELS) as [FilterKey, string][]).map(([f, label]) => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+                      filter === f
+                        ? 'bg-brand-700 text-white shadow-sm'
+                        : 'bg-white border border-brand-200 text-brand-500 hover:border-brand-400 hover:text-brand-700'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sort */}
+              <div className="flex items-center gap-1.5 ml-auto shrink-0">
+                <SlidersHorizontal size={13} className="text-brand-400" />
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortKey)}
+                  className="border-2 border-brand-100 rounded-xl px-3 py-2 text-xs bg-white outline-none focus:border-brand-400 text-brand-600 font-semibold cursor-pointer transition-colors"
+                >
+                  <option value="deadline">Deadline</option>
+                  <option value="created">Newest</option>
+                  <option value="alpha">A–Z</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* Goal grid */}
+          {isLoading ? (
+            <div className="flex justify-center py-20">
+              <div className="w-7 h-7 border-[3px] border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+            </div>
+          ) : displayed.length === 0 ? (
+            <EmptyState
+              icon={<Target size={32} />}
+              title={goals.length === 0 ? 'No goals yet' : 'No goals match'}
+              description={
+                goals.length === 0
+                  ? 'Create your first goal and start making progress.'
+                  : 'Try a different filter or search term.'
+              }
+              action={
+                goals.length === 0 ? (
+                  <Button onClick={() => setCreateOpen(true)}>
+                    <Plus size={15} />
+                    Create first goal
+                  </Button>
+                ) : undefined
+              }
+            />
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {displayed.map((goal) => (
+                <GoalCard key={goal.id} goal={goal} />
+              ))}
+            </div>
+          )}
         </div>
-      ) : displayed.length === 0 ? (
-        <EmptyState
-          icon={<Target size={48} />}
-          title={goals.length === 0 ? "No goals yet" : "No goals match"}
-          description={
-            goals.length === 0
-              ? "Create your first goal and start making progress."
-              : "Try a different filter or search term."
-          }
-          action={
-            goals.length === 0 ? (
-              <Button onClick={() => setCreateOpen(true)}>
-                <Plus size={16} />
-                Create first goal
-              </Button>
-            ) : undefined
-          }
-        />
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayed.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} />
-          ))}
-        </div>
-      )}
+
+        {/* Sidebar */}
+        <aside className="hidden lg:block space-y-4 pt-[4.75rem]">
+          <RankBadge expanded />
+        </aside>
+      </div>
 
       <CreateGoalModal
         open={createOpen}

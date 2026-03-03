@@ -9,7 +9,7 @@ export function useGoals() {
     queryKey: GOALS_QUERY_KEY,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('goals')
+        .from('goalst_goals')
         .select('*')
         .is('parent_goal_id', null)
         .order('end_date', { ascending: true, nullsFirst: false })
@@ -25,7 +25,7 @@ export function useGoal(goalId: string) {
     queryKey: ['goal', goalId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('goals')
+        .from('goalst_goals')
         .select('*')
         .eq('id', goalId)
         .single()
@@ -42,7 +42,7 @@ export function useSubGoals(parentId: string) {
     queryKey: ['sub-goals', parentId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('goals')
+        .from('goalst_goals')
         .select('*')
         .eq('parent_goal_id', parentId)
         .order('created_at', { ascending: true })
@@ -59,7 +59,7 @@ export function useCreateGoal() {
   return useMutation({
     mutationFn: async (payload: Partial<Goal>) => {
       const { data, error } = await supabase
-        .from('goals')
+        .from('goalst_goals')
         .insert(payload)
         .select()
         .single()
@@ -77,7 +77,7 @@ export function useUpdateGoal() {
   return useMutation({
     mutationFn: async ({ id, ...payload }: Partial<Goal> & { id: string }) => {
       const { data, error } = await supabase
-        .from('goals')
+        .from('goalst_goals')
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -91,6 +91,9 @@ export function useUpdateGoal() {
       if (variables.parent_goal_id) {
         qc.invalidateQueries({ queryKey: ['sub-goals', variables.parent_goal_id] })
       }
+      if (variables.status) {
+        qc.invalidateQueries({ queryKey: ['user-score'] })
+      }
     },
   })
 }
@@ -99,7 +102,7 @@ export function useDeleteGoal() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (goalId: string) => {
-      const { error } = await supabase.from('goals').delete().eq('id', goalId)
+      const { error } = await supabase.from('goalst_goals').delete().eq('id', goalId)
       if (error) throw error
     },
     onSuccess: () => {

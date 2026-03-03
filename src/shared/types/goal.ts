@@ -22,12 +22,27 @@ export interface Goal {
   color_tag: string | null
   is_recurring: boolean
   recurrence_cadence: RecurrenceCadence | null
+  priority: number
   created_at: string
   updated_at: string
   // computed / joined
   sub_goals?: Goal[]
   progress?: number
   collaborators?: Collaborator[]
+}
+
+export interface UserScore {
+  user_id: string
+  total_score: number
+  goals_completed: number
+  goals_total: number
+}
+
+export interface RankInfo {
+  rank_name: string
+  rank_emoji: string
+  next_threshold: number | null
+  next_rank_name: string | null
 }
 
 export interface Collaborator {

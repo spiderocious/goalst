@@ -10,18 +10,18 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  green: 'bg-brand-100 text-brand-800 border-brand-200',
-  yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  red: 'bg-red-100 text-red-700 border-red-200',
-  gray: 'bg-gray-100 text-gray-700 border-gray-200',
-  blue: 'bg-blue-100 text-blue-700 border-blue-200',
+  green: 'bg-brand-50 text-brand-700 ring-1 ring-brand-200',
+  yellow: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-200',
+  red: 'bg-red-50 text-red-600 ring-1 ring-red-200',
+  gray: 'bg-gray-50 text-gray-600 ring-1 ring-gray-200',
+  blue: 'bg-blue-50 text-blue-600 ring-1 ring-blue-200',
 }
 
 export function Badge({ children, variant = 'gray', className }: BadgeProps) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border',
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold',
         variantClasses[variant],
         className,
       )}

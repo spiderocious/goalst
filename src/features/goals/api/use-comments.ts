@@ -7,7 +7,7 @@ export function useComments(goalId: string) {
     queryKey: ['comments', goalId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('comments')
+        .from('goalst_comments')
         .select('*, user:user_id(id, email)')
         .eq('goal_id', goalId)
         .order('created_at', { ascending: true })
@@ -32,7 +32,7 @@ export function useAddComment() {
     }) => {
       const { data: { user } } = await supabase.auth.getUser()
       const { data, error } = await supabase
-        .from('comments')
+        .from('goalst_comments')
         .insert({
           goal_id: goalId,
           body,

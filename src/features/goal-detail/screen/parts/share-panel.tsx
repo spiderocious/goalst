@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useShareLinks, useCreateShareLink, useRevokeShareLink } from '@features/goals/api/use-share-links'
 import { useCollaborators, useAddCollaborator, useRemoveCollaborator } from '@features/goals/api/use-collaborators'
-import { Button, Badge, Input, Select } from '@ui/index'
+import { Button, Badge, Input } from '@ui/index'
 import { Link2, Copy, X, UserPlus, Users } from '@ui/icons'
 import { sharedGoalPath } from '@shared/constants/routes'
 import type { SharePermission, CollaboratorRole } from '@shared/types'

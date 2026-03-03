@@ -7,7 +7,7 @@ export function useTemplates() {
     queryKey: ['templates'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('templates')
+        .from('goalst_templates')
         .select('*')
         .order('created_at', { ascending: false })
       if (error) throw error
@@ -22,7 +22,7 @@ export function useSaveTemplate() {
     mutationFn: async ({ name, goal }: { name: string; goal: Partial<Goal> }) => {
       const { data: { user } } = await supabase.auth.getUser()
       const { data, error } = await supabase
-        .from('templates')
+        .from('goalst_templates')
         .insert({ name, structure: goal, user_id: user!.id })
         .select()
         .single()
@@ -39,7 +39,7 @@ export function useDeleteTemplate() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (templateId: string) => {
-      const { error } = await supabase.from('templates').delete().eq('id', templateId)
+      const { error } = await supabase.from('goalst_templates').delete().eq('id', templateId)
       if (error) throw error
     },
     onSuccess: () => {
