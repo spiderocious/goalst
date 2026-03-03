@@ -1,0 +1,21 @@
+import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from '../providers/auth-provider'
+import { ROUTES } from '@shared/constants/routes'
+
+export function AuthGuard() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to={ROUTES.LOGIN} replace />
+  }
+
+  return <Outlet />
+}
