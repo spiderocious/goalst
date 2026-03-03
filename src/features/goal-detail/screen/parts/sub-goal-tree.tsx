@@ -206,9 +206,6 @@ function SubGoalRow({ goal, depth, canEdit }: SubGoalRowProps) {
       </div>
 
       {/* Recursive children */}
-      {expanded && children.length > 0 && (
-        <SubGoalTree parentId={goal.id} depth={depth + 1} canEdit={canEdit} />
-      )}
       {expanded && (
         <SubGoalTree parentId={goal.id} depth={depth + 1} canEdit={canEdit} />
       )}
